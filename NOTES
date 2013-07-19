@@ -1,6 +1,7 @@
 Plans
  * Clean up the nomenclature around nodes, instances, processes etc. Currently there are
    several confusing parts where a single noun means different things in different places.
+ * Add unit tests. Lots of unit tests. Mainly around the core parts.
  * Clean up address handling.
   - Introduce the concept of views that are primarily constructed by spawn_scatter.
   - Views should be easily constructible from scratch by providing a list of URIs.
