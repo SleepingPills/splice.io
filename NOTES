@@ -1,0 +1,11 @@
+Plans
+ * Clean up the nomenclature around nodes, instances, processes etc. Currently there are
+   several confusing parts where a single noun means different things in different places.
+ * Clean up address handling.
+  - Introduce the concept of views that are primarily constructed by spawn_scatter.
+  - Views should be easily constructible from scratch by providing a list of URIs.
+  - Use a fungible URI class that contains both resource identifier and address.
+ * Add more robust worker management to cluster. Instances should be able to:
+  - Monitor the worker OS process
+  - Force terminate the process in case it doesn't respond
+  - etc...
