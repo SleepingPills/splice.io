@@ -1,8 +1,7 @@
 =========================================================
 splice.io
 =========================================================
-distributed processes and coroutines in python
-----------------------------------------------
+**Distributed Processes and Coroutines in Python**
 
 What is it
 ==========
@@ -56,7 +55,7 @@ Main Features
     processes as memory allows; generally in the order of hundreds of thousands
     to millions.
   - ZMQ is used as a low level transport mechanism providing well known bugs
-   and shortcomings, instead of a custom thing with unknown bugs and shortcomings.
+    and shortcomings, instead of a custom thing with unknown bugs and shortcomings.
   - Robust serialization from the PiCloud http://www.picloud.com/ client library.
 
 Reliability
@@ -65,7 +64,7 @@ Reliability
     message is delivered, or nothing is delivered.
   - **There is no guarantee that a particular message will be delivered.** The underlying ZMQ
     transport does not use durable message queueing and there isn't one implemented in
-   **splice.io** either.
+    **splice.io** either.
     Some (but not all) scenarios under which messages can be lost:
      - In case the host OS process crashes, any unhandled (but recieved) messages will be lost.
      - In case the internal ZMQ message buffers get filled, additional messages will be silently
