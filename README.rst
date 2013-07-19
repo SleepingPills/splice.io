@@ -1,6 +1,8 @@
 =========================================================
-splice.io: distributed processes and coroutines in python
+splice.io
 =========================================================
+distributed processes and coroutines in python
+----------------------------------------------
 
 What is it
 ==========
@@ -35,47 +37,47 @@ For an idea on what features/changes are planned, take a look at the ``NOTES`` f
 
 Main Features
 =============
- - Construct distributed processes from simple python classes.
- - Construct distributed coroutines from python generators.
- - Communication is asynchronous by default. Sending a message
-   to a process will result in a Promise (or Future) that will
-   eventually contain the response (if any). The response can be
-   a regular value, or an exception if the recieving process failed.
- - Consistent scheduling. Similarly to how Erlang actors work, a single
-   splice process only ever handles one message at a time. Separate
-   processes are allowed to execute concurrently (inside the same OS process)
-   or parallel (accross OS processes). This guarantee means that it is easier
-   to reason about the interaction between proceses, but most importantly, there
-   is no need for synchronisation mechanisms inside the processes themselves.
-   At the same time, processes are implicitly parallel streams so they scale
-   naturally.
- - Splice processes are lightweight. They have a small memory footprint and
-   inactive processes do not take up processor time. One can have as many
-   processes as memory allows; generally in the order of hundreds of thousands
-   to millions.
- - ZMQ is used as a low level transport mechanism providing well known bugs
+  - Construct distributed processes from simple python classes.
+  - Construct distributed coroutines from python generators.
+  - Communication is asynchronous by default. Sending a message
+    to a process will result in a Promise (or Future) that will
+    eventually contain the response (if any). The response can be
+    a regular value, or an exception if the recieving process failed.
+  - Consistent scheduling. Similarly to how Erlang actors work, a single
+    splice process only ever handles one message at a time. Separate
+    processes are allowed to execute concurrently (inside the same OS process)
+    or parallel (accross OS processes). This guarantee means that it is easier
+    to reason about the interaction between proceses, but most importantly, there
+    is no need for synchronisation mechanisms inside the processes themselves.
+    At the same time, processes are implicitly parallel streams so they scale
+    naturally.
+  - Splice processes are lightweight. They have a small memory footprint and
+    inactive processes do not take up processor time. One can have as many
+    processes as memory allows; generally in the order of hundreds of thousands
+    to millions.
+  - ZMQ is used as a low level transport mechanism providing well known bugs
    and shortcomings, instead of a custom thing with unknown bugs and shortcomings.
- - Robust serialization from the PiCloud http://www.picloud.com/ client library.
+  - Robust serialization from the PiCloud http://www.picloud.com/ client library.
 
 Reliability
 ===========
- - **splice.io** guarantees that only whole messages will be dispatched. E.g. either the entire
-   message is delivered, or nothing is delivered.
- - **There is no guarantee that a particular message will be delivered.** The underlying ZMQ
-   transport does not use durable message queueing and there isn't one implemented in
+  - **splice.io** guarantees that only whole messages will be dispatched. E.g. either the entire
+    message is delivered, or nothing is delivered.
+  - **There is no guarantee that a particular message will be delivered.** The underlying ZMQ
+    transport does not use durable message queueing and there isn't one implemented in
    **splice.io** either.
-   Some (but not all) scenarios under which messages can be lost:
-   - In case the host OS process crashes, any unhandled (but recieved) messages will be lost.
-   - In case the internal ZMQ message buffers get filled, additional messages will be silently
-     discarded.
- - An error will be raised in case message delivery cannot be confirmed. This is a mechanism
-   provided by **splice.io** on top of ZMQ. Note that ZMQ itself does not provide any notification
-   in case of delivery failures.
- - **splice.io** will attempt to reconnect if a connection gets dropped, and messages
-   will be buffered up to a certain limit (this will be configurable in the future).
- - **splice.io** will start transmitting as soon as a connection is established. If A connects
-   to B, but B is not running yet, mesages will be buffered and then transmitted as soon as
-   B comes online.
+    Some (but not all) scenarios under which messages can be lost:
+     - In case the host OS process crashes, any unhandled (but recieved) messages will be lost.
+     - In case the internal ZMQ message buffers get filled, additional messages will be silently
+       discarded.
+  - An error will be raised in case message delivery cannot be confirmed. This is a mechanism
+    provided by **splice.io** on top of ZMQ. Note that ZMQ itself does not provide any notification
+    in case of delivery failures.
+  - **splice.io** will attempt to reconnect if a connection gets dropped, and messages
+    will be buffered up to a certain limit (this will be configurable in the future).
+  - **splice.io** will start transmitting as soon as a connection is established. If A connects
+    to B, but B is not running yet, mesages will be buffered and then transmitted as soon as
+    B comes online.
 
 Performance
 ===========
@@ -240,11 +242,11 @@ parallel computing needs.
 
 Current characteristics:
 
- - Full session isolation. Workers live only as long as the session and are not
-   shared. Once the session ends, worker processes are terminated.
- - Automatic and transparent dependency sharing
- - Support for simple parallel computations
- - Naive load balancing
+  - Full session isolation. Workers live only as long as the session and are not
+    shared. Once the session ends, worker processes are terminated.
+  - Automatic and transparent dependency sharing
+  - Support for simple parallel computations
+  - Naive load balancing
 
 Dependency handling
 -------------------
