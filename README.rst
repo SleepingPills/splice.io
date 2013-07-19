@@ -106,7 +106,7 @@ To turn a class into a splice process, simply add the ``splice.ProcessMeta`` met
 it is not specified. For the sake of clarity, it is best to do so explicitly.::
 
     class MyProc(Process):
-        \_\_metaclass\_\_ = ProcessMeta
+        __metaclass__ = ProcessMeta
 
         def some_handler(some_param):
             return some_param
