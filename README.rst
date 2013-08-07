@@ -1,7 +1,6 @@
 =========================================================
-splice.io
+splice.io: distributed processes and coroutines in python
 =========================================================
-**Distributed Processes and Coroutines in Python**
 
 What is it
 ==========
@@ -36,47 +35,47 @@ For an idea on what features/changes are planned, take a look at the ``NOTES`` f
 
 Main Features
 =============
-  - Construct distributed processes from simple python classes.
-  - Construct distributed coroutines from python generators.
-  - Communication is asynchronous by default. Sending a message
-    to a process will result in a Promise (or Future) that will
-    eventually contain the response (if any). The response can be
-    a regular value, or an exception if the recieving process failed.
-  - Consistent scheduling. Similarly to how Erlang actors work, a single
-    splice process only ever handles one message at a time. Separate
-    processes are allowed to execute concurrently (inside the same OS process)
-    or parallel (accross OS processes). This guarantee means that it is easier
-    to reason about the interaction between proceses, but most importantly, there
-    is no need for synchronisation mechanisms inside the processes themselves.
-    At the same time, processes are implicitly parallel streams so they scale
-    naturally.
-  - Splice processes are lightweight. They have a small memory footprint and
-    inactive processes do not take up processor time. One can have as many
-    processes as memory allows; generally in the order of hundreds of thousands
-    to millions.
-  - ZMQ is used as a low level transport mechanism providing well known bugs
-    and shortcomings, instead of a custom thing with unknown bugs and shortcomings.
-  - Robust serialization from the PiCloud http://www.picloud.com/ client library.
+ - Construct distributed processes from simple python classes.
+ - Construct distributed coroutines from python generators.
+ - Communication is asynchronous by default. Sending a message
+   to a process will result in a Promise (or Future) that will
+   eventually contain the response (if any). The response can be
+   a regular value, or an exception if the recieving process failed.
+ - Consistent scheduling. Similarly to how Erlang actors work, a single
+   splice process only ever handles one message at a time. Separate
+   processes are allowed to execute concurrently (inside the same OS process)
+   or parallel (accross OS processes). This guarantee means that it is easier
+   to reason about the interaction between proceses, but most importantly, there
+   is no need for synchronisation mechanisms inside the processes themselves.
+   At the same time, processes are implicitly parallel streams so they scale
+   naturally.
+ - Splice processes are lightweight. They have a small memory footprint and
+   inactive processes do not take up processor time. One can have as many
+   processes as memory allows; generally in the order of hundreds of thousands
+   to millions.
+ - ZMQ is used as a low level transport mechanism providing well known bugs
+   and shortcomings, instead of a custom thing with unknown bugs and shortcomings.
+ - Robust serialization from the PiCloud http://www.picloud.com/ client library.
 
 Reliability
 ===========
-  - **splice.io** guarantees that only whole messages will be dispatched. E.g. either the entire
-    message is delivered, or nothing is delivered.
-  - **There is no guarantee that a particular message will be delivered.** The underlying ZMQ
-    transport does not use durable message queueing and there isn't one implemented in
-    **splice.io** either.
-    Some (but not all) scenarios under which messages can be lost:
-     - In case the host OS process crashes, any unhandled (but recieved) messages will be lost.
-     - In case the internal ZMQ message buffers get filled, additional messages will be silently
-       discarded.
-  - An error will be raised in case message delivery cannot be confirmed. This is a mechanism
-    provided by **splice.io** on top of ZMQ. Note that ZMQ itself does not provide any notification
-    in case of delivery failures.
-  - **splice.io** will attempt to reconnect if a connection gets dropped, and messages
-    will be buffered up to a certain limit (this will be configurable in the future).
-  - **splice.io** will start transmitting as soon as a connection is established. If A connects
-    to B, but B is not running yet, mesages will be buffered and then transmitted as soon as
-    B comes online.
+ - **splice.io** guarantees that only whole messages will be dispatched. E.g. either the entire
+   message is delivered, or nothing is delivered.
+ - **There is no guarantee that a particular message will be delivered.** The underlying ZMQ
+   transport does not use durable message queueing and there isn't one implemented in
+   **splice.io** either.
+   Some (but not all) scenarios under which messages can be lost:
+   - In case the host OS process crashes, any unhandled (but received) messages will be lost.
+   - In case the internal ZMQ message buffers get filled, additional messages will be silently
+     discarded.
+ - An error will be raised in case message delivery cannot be confirmed. This is a mechanism
+   provided by **splice.io** on top of ZMQ. Note that ZMQ itself does not provide any notification
+   in case of delivery failures.
+ - **splice.io** will attempt to reconnect if a connection gets dropped, and messages
+   will be buffered up to a certain limit (this will be configurable in the future).
+ - **splice.io** will start transmitting as soon as a connection is established. If A connects
+   to B, but B is not running yet, mesages will be buffered and then transmitted as soon as
+   B comes online.
 
 Performance
 ===========
@@ -95,7 +94,7 @@ Once those are acquired, simply run::
 
 Examples
 ========
-The most frequently used classes are exposed in the root ``splice`` namespace\:::
+The most frequently used classes are exposed in the root ``splice`` namespace::
 
     from splice import runtime, Process, ProcessMeta, sync, syncmany
 
@@ -106,7 +105,7 @@ To turn a class into a splice process, simply add the ``splice.ProcessMeta`` met
 it is not specified. For the sake of clarity, it is best to do so explicitly.::
 
     class MyProc(Process):
-        __metaclass__ = ProcessMeta
+        \_\_metaclass\_\_ = ProcessMeta
 
         def some_handler(some_param):
             return some_param
@@ -114,7 +113,7 @@ it is not specified. For the sake of clarity, it is best to do so explicitly.::
 Spawn a splice process instance locally
 ---------------------------------------
 The ``spawn`` method of the runtime handles process creation. Positional and keyword
-arguments can be passed after the type is specified.::
+arguments can be passed after the type is specified::
 
     proc = runtime.spawn(MyProc, arg1, kwarg1="moof")
 
@@ -128,6 +127,13 @@ of these is the destination address.::
 The handle returned for a process spawned remotely is a transparent proxy that
 relays all calls to the remote object.
 
+Connect to an existing process
+------------------------------
+Predictably, the ``connect`` method connects to remote (or local) processes.
+The address is specified as a ``splice.uri.url`` object::
+
+    proc = runtime.connect(splice.uri.url("my_proc", "tcp://10.1.1.15:54321"))
+
 Send a message to a process
 ---------------------------
 Sending messages is dead simple, one just needs to call methods on
@@ -138,12 +144,12 @@ the receiving process\:::
 The return value is not the result produced by the process (since message passing
 is asynchronous), but a Promise object that will eventually contain the result.
 
-To retrieve the actual value, one can call the ``get()`` method\::
+To retrieve the actual value, one can call the ``get()`` method::
 
     result.get()
 
 The better way to do it is to use ``sync`` function, which can wrap the method
-call directly\:::
+call directly::
 
     result = sync(proc.some_handler("Hello World!"))
 
@@ -151,19 +157,19 @@ Note that the result does not need to be evaluated immediately, it can happen
 at any time after the message has been sent. In case the response has already
 arrived, both the ``sync`` function and the ``get`` method will return immediately.
 
-``syncmany`` is a shorthand for synchronously evaluating many Promises at once\:::
+``syncmany`` is a shorthand for synchronously evaluating many Promises at once::
 
     results = syncmany(promises)
 
 Scatter splice processes across many nodes
 ------------------------------------------
-``spawn_scatter`` can be used to spawn a particular process on a list of nodes\:::
+``spawn_scatter`` can be used to spawn a particular process on a list of nodes::
 
     procs = runtime.spawn_scatter(destinations, MyProc)
 
 Spawn a coroutine
 -----------------
-``Coroutines`` are simple splice processes that wrap a python generator\:::
+``Coroutines`` are simple splice processes that wrap a python generator::
 
     def some_coro(arg1, arg2):
         acc = arg1
@@ -174,7 +180,7 @@ Spawn a coroutine
     coro = runtime.spawn(some_coro, 10, 5)
 
 Splice coroutines have practically the same semantics as python generators, so
-one can iterate over them (NOTE: iteration is inherently synchronous!)\:::
+one can iterate over them (NOTE: iteration is inherently synchronous!)::
 
     for item in coro:
         print item
@@ -182,7 +188,7 @@ one can iterate over them (NOTE: iteration is inherently synchronous!)\:::
 Coroutines also support bidirectional communication. E.g. in the below
 example, the coroutine first yields the currently accumulated value, and
 then waits for a new value to arrive. It then adds the new value to the
-accumulator variable\:::
+accumulator variable::
 
     def some_coro():
         acc = 0
@@ -202,7 +208,7 @@ Send splice process references
 ------------------------------
 Splice processes get pickled as a simple proxy object, so they can be easily
 transmitted as arguments or even fields of nested objects. The recieving end
-will get a transparent proxy that relays messages to the host node\:::
+will get a transparent proxy that relays messages to the host node::
 
     # Send a reference of the coroutine to a remote process
     proc.some_handler(coro)
@@ -210,15 +216,17 @@ will get a transparent proxy that relays messages to the host node\:::
 Fork a splice node
 ------------------
 The ``runtime.fork`` method can be used to quickly spin up a number of nodes
-that can host splice processes on the local machine. Currently this method
-simply returns a list of addresses that can be fed to ``runtime.spawn_scatter``, but
-in the future there will be a more robust ``view`` mechanism on remote nodes.::
+that can host splice processes on the local machine::
 
     nodes = runtime.fork(10) # Spawn 10 nodes (OS processes)
 
+Currently this method
+simply returns a list of addresses that can be fed to ``runtime.spawn_scatter``, but
+in the future there will be a more robust ``view`` mechanism on remote nodes.
+
 Stop a splice process
 ---------------------
-Splice processes can be easily stopped\:::
+Splice processes can be easily stopped::
 
     runtime.stop(proc) # `proc` can be a process reference or a proxy
 
@@ -226,7 +234,7 @@ Shut down a splice node
 -----------------------
 To gracefully shut down a splice node, it is best to use the ``runtime.shutdown``
 method. This method can shut down remote nodes and ensures that all child nodes are
-properly cleaned up.::
+properly cleaned up::
 
     runtime.shutdown() # Terminate the local node
     runtime.shutdown(remote_node=some_remote_address) # Terminate a remote node
@@ -241,11 +249,11 @@ parallel computing needs.
 
 Current characteristics:
 
-  - Full session isolation. Workers live only as long as the session and are not
-    shared. Once the session ends, worker processes are terminated.
-  - Automatic and transparent dependency sharing
-  - Support for simple parallel computations
-  - Naive load balancing
+ - Full session isolation. Workers live only as long as the session and are not
+   shared. Once the session ends, worker processes are terminated.
+ - Automatic and transparent dependency sharing
+ - Support for simple parallel computations
+ - Naive load balancing
 
 Dependency handling
 -------------------
@@ -266,7 +274,7 @@ it is, the worker node downloads the dependency into a temporary session storage
 Start a local cluster
 ---------------------
 It is dead simple to fire up a cluster. One just needs to import some
-plumbing from ``splice.cluster``\:::
+plumbing from ``splice.cluster``::
 
     from splice.cluster import session
     c = session(worker_count=4) # Omitting `worker_count` will result in using all CPUs
@@ -279,7 +287,7 @@ all worker processes once the work is finished\:::
 
 Farm out work
 -------------
-With the cluster session at hand, farming out work is again dead simple\:::
+With the cluster session at hand, farming out work is again dead simple::
 
     results = c.map(lambda v: v ** 2, range(100))
 
@@ -287,7 +295,7 @@ Extra function arguments can be provided as well\:::
 
     results = c.map(lambda v, a: v ** a, range(100), 5)
 
-The ``apply`` method can be used to simply execute a task on all workers\:::
+The ``apply`` method can be used to simply execute a task on all workers::
 
     def work(arg, named_arg=None)
         ...
@@ -310,18 +318,19 @@ Setting up a managed cluster
 To run a cluster accross multiple machines, one needs to set up a master node
 and then initialize worker node instances such that they connect to the master.
 
-The master node can be set up using the ``sp_run_master.py`` script\:::
+The master node can be set up using the ``sp_run_master.py`` script::
 
     sp_run_master.py --port 50000
 
 Assuming the master node machine name is *master-node*, worker nodes can be run
-thusly\:::
+thusly::
 
     sp_run_instance.py --master-address tcp://master-node:50000
 
 Once the instances register with the master node, they can start accepting work.
 
 To use the newly set up cluster, one just has to add the master address as a
-parameter to the session\:::
+parameter to the session::
 
     c = session(worker_count=20, master_address="tcp://master-node:50000")
+

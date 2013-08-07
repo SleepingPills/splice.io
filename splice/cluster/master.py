@@ -135,7 +135,7 @@ class Master(object):
         # Update load based on a simple formula of tenancy and resource usage
         node.update(cpu_usage + ram_usage, cpu_usage, ram_total, ram_usage)
 
-        self._logger.debug("Recieved ping %s", node)
+        self._logger.debug("Received ping %s", node)
 
         # Enqueue the node again
         self._enqueue(node)

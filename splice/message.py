@@ -13,7 +13,7 @@ class NoCopy(object):
     def get_items(self):
         return [frame.bytes for frame in self.frames]
 
-    @classmethod
+    @staticmethod
     def from_items(cls, items):
         return NoCopy([Frame(item) for item in items])
 

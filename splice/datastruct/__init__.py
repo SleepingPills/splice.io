@@ -1,5 +1,6 @@
 from math import ceil, floor
 
+
 def chop(l, n):
     """
     Chop l into n chunks while preserving order

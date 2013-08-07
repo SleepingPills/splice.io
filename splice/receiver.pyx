@@ -19,7 +19,7 @@ cdef char*c_ctr_kill = "KIL"
 
 def receive(in_sock, out_sock):
     """
-    Core reciever loop. Runs outside of the GIL and can thus respond to pings and
+    Core receiver loop. Runs outside of the GIL and can thus respond to pings and
     other control messages even if the host python code is busy with something else.
     Unhandled control messages are forwarded.
 
@@ -97,7 +97,7 @@ cdef int _receive(Socket in_sock, Socket out_sock):
 
                 should_forward = True
 
-            # Recieve any additional frames and optionally forward them.
+            # Receive any additional frames and optionally forward them.
             # Additional frames for PING messages will be silently discarded.
             while more:
                 rc = zmq_recvmsg(rcv_handle, &msg_data, 0)

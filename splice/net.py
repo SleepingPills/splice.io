@@ -10,7 +10,7 @@ import time
 from splice import uri, message
 from splice.exception import ChannelClosed
 from splice.green import Tasklet
-from splice.reciever import ctr_ping, ctr_data, ctr_exit, receive
+from splice.receiver import ctr_ping, ctr_data, ctr_exit, receive
 from gevent.event import AsyncResult
 
 # Data message types
@@ -112,12 +112,12 @@ class Router(object):
         self._logger.debug("Scheduling execution loop tasklet")
         self._exec_loop_task = Tasklet.spawn(self._exec_loop, exec_loop_sock)
         # Spin up the execution loop tasklet but just long enough for it to start listening
-        # on the exec loop reciever
+        # on the exec loop receiver
         self._exec_loop_task.join(1e-3)
 
-        self._recieve_loop_thread = threading.Thread(target=self._recieve_loop, args=(recv_server_sock, recv_exec_sink))
-        self._recieve_loop_thread.daemon = True
-        self._recieve_loop_thread.start()
+        self._receive_loop_thread = threading.Thread(target=self._receive_loop, args=(recv_server_sock, recv_exec_sink))
+        self._receive_loop_thread.daemon = True
+        self._receive_loop_thread.start()
 
         self._heartbeat_loop_thread = threading.Thread(target=self._heartbeat_loop, args=(hb_exec_sink,))
         self._heartbeat_loop_thread.daemon = True
@@ -203,7 +203,7 @@ class Router(object):
         log = logging.getLogger(self.address + "/router-exec-loop")
 
         def handle_handshake(remote_node_address, _):
-            self._logger.debug("Recieved handshake from %s", remote_node_address)
+            self._logger.debug("Received handshake from %s", remote_node_address)
             self._connect(remote_node_address, send_handshake=False)
 
         def handle_request(remote_node_address, payload):
@@ -252,25 +252,25 @@ class Router(object):
             elif ctr_type == ctr_exit:
                 self._on_shutdown(remote_node_address, msg_type)
             else:
-                log.warn("Recieved message with unkown control type '%s'", ctr_type)
+                log.warn("Received message with unkown control type '%s'", ctr_type)
 
         self._loop_wrapper(_loop, log)
 
         log.debug("Exiting execution loop")
 
-    def _recieve_loop(self, server_sock, exec_loop_sock):
+    def _receive_loop(self, server_sock, exec_loop_sock):
         log = logging.getLogger(self.address + "/router-recv-loop")
 
-        log.debug("Starting recieve loop")
+        log.debug("Starting receive loop")
 
         try:
             receive(server_sock, exec_loop_sock)
         except:
-            # In case the core reciever loop failed, we exit
+            # In case the core receiver loop failed, we exit
             log.error("Fatal error in receive loop:\n%s", traceback.format_exc())
             os._exit(-1)
 
-        log.debug("Exiting recieve loop")
+        log.debug("Exiting receive loop")
 
     def _heartbeat_loop(self, exec_loop_sock):
         log = logging.getLogger(self.address + "/router-heartbeat-loop")

@@ -1,7 +1,6 @@
 Plans
  * Clean up the nomenclature around nodes, instances, processes etc. Currently there are
    several confusing parts where a single noun means different things in different places.
- * Add unit tests. Lots of unit tests. Mainly around the core parts.
  * Clean up address handling.
   - Introduce the concept of views that are primarily constructed by spawn_scatter.
   - Views should be easily constructible from scratch by providing a list of URIs.
@@ -10,22 +9,3 @@ Plans
   - Monitor the worker OS process
   - Force terminate the process in case it doesn't respond
   - etc...
- * Finish the functionality for process relocation. Non coroutine
-   processes should support passivation and subsequent transfer to another node.
-   - Look into some hacks to be able to serialize generator state in python.
- * Look into interesting uses of syntax for constructing processes. E.g. a ContextManager
-   based process construction coupled with MacroPy:
-   
-    with splice.spawn.process as my_process:
-        msg = my_process.recieve()
-        
-        with switch(msg):
-            if Hello(x):
-                yield x + " World!"
-            elif Cmd(x, "print"):
-                print x
-            elif Cmd(x, "quit"):
-                runtime.exit()
-                
-   The above could be perhaps combined with python generators to construct neat pattern matching
-   based message handling.
