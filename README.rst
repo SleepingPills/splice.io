@@ -66,8 +66,7 @@ Reliability
    **splice.io** either.
    Some (but not all) scenarios under which messages can be lost:
    - In case the host OS process crashes, any unhandled (but received) messages will be lost.
-   - In case the internal ZMQ message buffers get filled, additional messages will be silently
-     discarded.
+   - In case the internal ZMQ message buffers get filled, additional messages will be silently discarded.
  - An error will be raised in case message delivery cannot be confirmed. This is a mechanism
    provided by **splice.io** on top of ZMQ. Note that ZMQ itself does not provide any notification
    in case of delivery failures.
