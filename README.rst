@@ -26,7 +26,7 @@ Disclaimer
 **splice.io** is prototype software. It is not yet finished or feature complete
 by any means. Many things will not work as expected or not work at all. It is sorely
 lacking unit tests. `This cat <http://imgur.com/zGHmZ>`_ was in the vicinity while
-the code was being written. This probably explains a lot.
+the code was being written - a circumstance that explains a lot.
 
 Use at your own risk!
 
