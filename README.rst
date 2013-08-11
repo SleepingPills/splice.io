@@ -25,7 +25,8 @@ Disclaimer
 ==========
 **splice.io** is prototype software. It is not yet finished or feature complete
 by any means. Many things will not work as expected or not work at all. It is sorely
-lacking unit tests.
+lacking unit tests. `This cat <http://imgur.com/zGHmZ>`_ was in the vicinity while
+the code was being written. This probably explains a lot.
 
 Use at your own risk!
 
@@ -37,18 +38,16 @@ Main Features
 =============
  - Construct distributed processes from simple python classes.
  - Construct distributed coroutines from python generators.
- - Communication is asynchronous by default. Sending a message
-   to a process will result in a Promise (or Future) that will
-   eventually contain the response (if any). The response can be
-   a regular value, or an exception if the recieving process failed.
- - Consistent scheduling. Similarly to how Erlang actors work, a single
-   splice process only ever handles one message at a time. Separate
-   processes are allowed to execute concurrently (inside the same OS process)
-   or parallel (accross OS processes). This guarantee means that it is easier
-   to reason about the interaction between proceses, but most importantly, there
-   is no need for synchronisation mechanisms inside the processes themselves.
-   At the same time, processes are implicitly parallel streams so they scale
-   naturally.
+ - Communication is asynchronous by default. Sending a message to a process will result
+   in a Promise (or Future) that will eventually contain the response (if any). The response
+   can be a regular value, or an exception if the recieving process failed.
+ - Consistent scheduling. Similarly to how Erlang actors work, a single splice process
+   only ever handles one message at a time. Separate processes are allowed to execute
+   concurrently (inside the same OS process) or parallel (accross OS processes).
+   This guarantee means that it is easier to reason about the interaction between
+   processes, but most importantly, there is no need for synchronisation mechanisms
+   inside the processes themselves. At the same time, processes are implicitly
+   parallel streams so they scale naturally.
  - Splice processes are lightweight. They have a small memory footprint and
    inactive processes do not take up processor time. One can have as many
    processes as memory allows; generally in the order of hundreds of thousands
@@ -56,6 +55,7 @@ Main Features
  - ZMQ is used as a low level transport mechanism providing well known bugs
    and shortcomings, instead of a custom thing with unknown bugs and shortcomings.
  - Robust serialization from the PiCloud http://www.picloud.com/ client library.
+ - A small furry kitten is petted and given treats every time you create a splice process.
 
 Reliability
 ===========
@@ -78,9 +78,9 @@ Reliability
 
 Performance
 ===========
-There has been next to no performance tuning done yet, but we tried to avoid unneccessary
-overheads. To get the best performance, it is advised to use asynchronous message passing
-whenever possible. Synchronous communication is not only slower, but can result in
+There has been next to no performance tuning done yet, but there was an effort to avoid
+unneccessary overheads. To get the best performance, it is advised to use asynchronous
+message passing whenever possible. Synchronous communication is not only slower, but can result in
 deadlocks if one is not careful; a simple example is when process A is waiting for
 a response from process B, and process B is waiting for a response from process A.
 
@@ -101,7 +101,7 @@ Designate a python class as a splice process
 --------------------------------------------
 To turn a class into a splice process, simply add the ``splice.ProcessMeta`` metaclass.
 ``splice.ProcessMeta`` will add ``splice.Process`` to the parent class list in case
-it is not specified. For the sake of clarity, it is best to do so explicitly.::
+it is not specified. For the sake of clarity, it is best to do so explicitly::
 
     class MyProc(Process):
         \_\_metaclass\_\_ = ProcessMeta
