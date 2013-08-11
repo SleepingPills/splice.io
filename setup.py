@@ -43,7 +43,7 @@ zmq_lib_path_bundled = os.path.join(pyzmq_dir, "libzmq" + zmq_lib_ext)
 
 if os.path.exists(zmq_lib_path_bundled):
     # Warn the user in case libzmq dir is explicitly specified but it is not the same as the bundled libzmq
-    if zmq_lib_dir is not None and pyzmq_dir != zmq_lib_dir:
+    if zmq_lib_dir is not None and zmq_lib_dir != pyzmq_dir:
         print("Warning: pyzmq is using bundled libzmq, but splice.io will be\n"
               "         linked against instance in directory: %s" % zmq_lib_dir)
     else:
