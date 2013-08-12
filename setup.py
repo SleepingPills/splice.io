@@ -1,20 +1,11 @@
 import os
-import zmq
 import sys
-import gevent
 
 from setuptools import setup, Extension
 from Cython.Distutils import build_ext
 
-include_dirs = zmq.get_includes()
+include_dirs = []
 zmq_lib_dir = None
-
-# Check version requirements
-min_gevent_version = (1, 0, 0)
-
-if gevent.version_info < min_gevent_version:
-    print("Error: gevent must be version %s or higher, got %s" % (str(min_gevent_version), str(gevent.version_info)))
-    sys.exit(1)
 
 # Use any extra include and library locations
 for arg in sys.argv[:]:
@@ -38,22 +29,29 @@ else:
     zmq_lib_name = "zmq"
     zmq_lib_ext = ".dylib" if sys.platform == "darwin" else ".so"
 
-pyzmq_dir = os.path.dirname(zmq.__file__)
-zmq_lib_path_bundled = os.path.join(pyzmq_dir, "libzmq" + zmq_lib_ext)
+try:
+    import zmq
 
-if os.path.exists(zmq_lib_path_bundled):
-    # Warn the user in case libzmq dir is explicitly specified but it is not the same as the bundled libzmq
-    if zmq_lib_dir is not None and zmq_lib_dir != pyzmq_dir:
-        print("Warning: pyzmq is using bundled libzmq, but splice.io will be\n"
-              "         linked against instance in directory: %s" % zmq_lib_dir)
-    else:
-        zmq_lib_dir = pyzmq_dir
+    include_dirs.extend(zmq.get_includes())
+    pyzmq_dir = os.path.dirname(zmq.__file__)
+    zmq_lib_path_bundled = os.path.join(pyzmq_dir, "libzmq" + zmq_lib_ext)
+
+    if os.path.exists(zmq_lib_path_bundled):
+        # Warn the user in case libzmq dir is explicitly specified but it is not
+        # the same as the bundled libzmq
+        if zmq_lib_dir is not None and zmq_lib_dir != pyzmq_dir:
+            print("Warning: pyzmq is using bundled libzmq, but splice.io will be\n"
+                  "         linked against instance in directory: %s" % zmq_lib_dir)
+        else:
+            zmq_lib_dir = pyzmq_dir
+except ImportError:
+    zmq = None
+    print("Warning: pyzmq not found - setup won't use bundled libzmq")
 
 # Exit in case there was no explicit libzmq dir specified and it isn't bundled with pyzmq
 if zmq_lib_dir is None:
     print("Error: libzmq directory was not specified and a pyzmq-bundled version couldn't be found either")
     sys.exit(1)
-
 
 library_dirs = [zmq_lib_dir] if zmq_lib_dir is not None else []
 
